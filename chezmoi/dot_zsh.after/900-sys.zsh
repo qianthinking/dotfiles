@@ -25,3 +25,9 @@ export SAVEHIST=10000000
 export GOPATH="$HOME/.go"
 
 path_prepend "$HOME/bin" "$HOME/.local/bin" "${KREW_ROOT:-$HOME/.krew}" "$GOPATH/bin"
+
+test -s "${HOME}/.zsh.after.local" && source "${HOME}/.zsh.after.local"
+
+# activate .venv if exists in current directory or any parent directory
+# put this at the end of .zshrc to ensure it runs after all other configurations
+activate

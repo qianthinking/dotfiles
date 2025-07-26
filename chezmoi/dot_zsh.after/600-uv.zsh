@@ -30,6 +30,3 @@ function chpwd() {
     activate
   fi
 }
-
-# put this at the end of .zshrc to ensure it runs after all other configurations
-activate

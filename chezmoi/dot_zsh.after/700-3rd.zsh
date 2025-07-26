@@ -37,5 +37,3 @@ fi
 
 # Clean up the temporary variable
 unset pnpm_home_path
-
-test -s "${HOME}/.zsh.after.local" && source "${HOME}/.zsh.after.local"

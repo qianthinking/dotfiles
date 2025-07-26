@@ -17,3 +17,29 @@ alias gpc='git push --set-upstream origin "$VCS_STATUS_LOCAL_BRANCH"'
 alias ch='chezmoi'
 alias che='chezmoi edit --apply'
 alias cch='cd ~/.local/share/chezmoi'
+
+# function to re-add a directory for chezmoi with forget and add
+function chreadd() {
+  if [[ -d "$1" ]]; then
+    chezmoi forget "$1" --force
+    chezmoi add "$1" --force
+  else
+    echo "Directory '$1' does not exist."
+  fi
+}
+
+# function to re-add all file with chezmoi native command and re-add all directories with forget and add
+function chreaddall() {
+  chezmoi re-add --force
+  manage_directories=$(chezmoi managed -i dirs | grep -v "\/")
+  while IFS= read -r dir; do
+    dir="$HOME/$dir"
+    if [[ -d "$dir" ]]; then
+      echo "Re-adding directory: $dir"
+      chezmoi forget "$dir" --force
+      chezmoi add "$dir" --force
+    else
+      echo "Directory '$dir' does not exist, skipping."
+    fi
+  done <<< "$manage_directories"
+}
