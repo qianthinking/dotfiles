@@ -12,6 +12,7 @@ alias gcim='git ci -m'
 alias gci='git ci'
 alias gplr='git pull --rebase'
 alias gpc='git push --set-upstream origin "$VCS_STATUS_LOCAL_BRANCH"'
+alias glp="git lp"
 
 # chezmoi Aliases
 alias ch='chezmoi'
