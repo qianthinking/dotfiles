@@ -1,0 +1,126 @@
+#!/bin/sh
+set -e
+
+echo "Running intelligent system package installer..."
+
+{{- /* 定义一个辅助函数来检查包是否已安装 */}}
+is_installed() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+{{- if eq .chezmoi.os "darwin" -}}
+{{- /* --- macOS --- */}}
+
+# 1. 安装 Homebrew (幂等)
+if ! is_installed brew; then
+  echo "Installing Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+echo "Updating Homebrew..."
+brew update
+
+# 2. 准备包列表
+PACKAGES_TO_INSTALL="{{ .packages.common | join " " }} {{ .packages.darwin | join " " }}"
+# 处理包名差异: fd-find 在 brew 中是 fd
+PACKAGES_TO_INSTALL=$(echo "$PACKAGES_TO_INSTALL" | sed 's/fd-find/fd/g')
+
+PACKAGES_TO_DARWIN_TAP="{{ .packages.darwin_taps | join " " }}"
+
+echo "Tapping additional Homebrew repositories if needed..."
+for tap in $PACKAGES_TO_DARWIN_TAP; do
+  if ! brew tap | grep -q "^$tap\$"; then
+    echo "Tapping $tap..."
+    brew tap "$tap"
+  else
+    echo "Tap $tap already exists."
+  fi
+done
+
+echo "Installing packages with Homebrew: $PACKAGES_TO_INSTALL"
+# 使用 for 循环来避免单个包失败导致整个命令中断，并提供更好的日志
+for pkg in $PACKAGES_TO_INSTALL; do
+  if brew list --versions "$pkg" >/dev/null; then
+    echo "$pkg is already installed."
+  else
+    echo "Installing $pkg..."
+    brew install "$pkg"
+  fi
+done
+
+# 3. 处理特殊安装
+echo "Handling special Homebrew installations..."
+
+# universal-ctags with --HEAD
+if ! brew list --versions universal-ctags >/dev/null; then
+  echo "Installing universal-ctags from HEAD..."
+  brew install --HEAD universal-ctags/universal-ctags/universal-ctags
+else
+  echo "universal-ctags is already installed."
+fi
+
+# fzf 安装后脚本
+if [ -f "$(brew --prefix)/opt/fzf/install" ]; then
+  echo "Running fzf post-install script..."
+  "$(brew --prefix)/opt/fzf/install" --all
+fi
+
+
+{{- else if eq .chezmoi.os "linux" -}}
+{{- /* --- Linux --- */}}
+
+# 从 /etc/os-release 获取发行版 ID
+DISTRO_ID={{ .chezmoi.osRelease.id | quote }}
+COMMON_PACKAGES="{{ .packages.common | join " " }}"
+DISTRO_PACKAGES=""
+INSTALL_CMD=""
+UPDATE_CMD=""
+
+case "$DISTRO_ID" in
+  "ubuntu"|"debian")
+    UPDATE_CMD="sudo apt-get update"
+    INSTALL_CMD="sudo apt-get install -y"
+    DISTRO_PACKAGES="{{ .packages.linux.ubuntu | join " " }}"
+    # 包名差异处理
+    COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/ripgrep/ripgrep/g') # 名称一致
+    ;;
+  "fedora"|"centos")
+    UPDATE_CMD="sudo dnf check-update"
+    INSTALL_CMD="sudo dnf install -y"
+    DISTRO_PACKAGES="{{ .packages.linux.centos | join " " }}"
+    # 包名差异处理
+    COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/fd-find/fd/g')
+    COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/bat/bat/g') # 在某些老版本CentOS可能叫 batcat
+    ;;
+  "arch")
+    UPDATE_CMD="sudo pacman -Syu --noconfirm"
+    INSTALL_CMD="sudo pacman -S --noconfirm"
+    DISTRO_PACKAGES="{{ .packages.linux.arch | join " " }}"
+    # 包名差异处理
+    COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/fd-find/fd/g')
+    ;;
+  *)
+    echo "Unsupported Linux distribution: $DISTRO_ID. Please install packages manually."
+    exit 1
+    ;;
+esac
+
+PACKAGES_TO_INSTALL="$COMMON_PACKAGES $DISTRO_PACKAGES"
+
+if [ -z "$(echo $PACKAGES_TO_INSTALL | xargs)" ]; then
+    echo "No packages to install for this distribution."
+    exit 0
+fi
+
+echo "Updating package list for $DISTRO_ID..."
+$UPDATE_CMD
+
+echo "Installing packages for $DISTRO_ID: $PACKAGES_TO_INSTALL"
+$INSTALL_CMD $PACKAGES_TO_INSTALL
+
+
+{{- else -}}
+echo "Unsupported OS: {{ .chezmoi.os }}. Skipping package installation."
+{{- end }}
+
+echo "System package installation script finished."

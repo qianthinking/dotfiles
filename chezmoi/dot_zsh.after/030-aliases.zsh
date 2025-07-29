@@ -10,13 +10,21 @@ alias top='glances'
 alias gs='git status'
 alias gcim='git ci -m'
 alias gci='git ci'
+alias gpl='git pull'
 alias gplr='git pull --rebase'
 alias gpc='git push --set-upstream origin "$VCS_STATUS_LOCAL_BRANCH"'
+alias gl='git l'
+alias glp="git lp"
 
 # chezmoi Aliases
 alias ch='chezmoi'
 alias che='chezmoi edit --apply'
 alias cch='cd ~/.local/share/chezmoi'
+
+# cd Aliases
+alias chd='cd ~/Downloads'
+alias chw='cd ~/workspace'
+alias cho='cd ~/opensource'
 
 # function to re-add a directory for chezmoi with forget and add
 function chreadd() {
@@ -43,3 +51,6 @@ function chreaddall() {
     fi
   done <<< "$manage_directories"
 }
+
+# Function to create a directory and change into it
+mcd() { mkdir -p "$1" && cd "$1" }

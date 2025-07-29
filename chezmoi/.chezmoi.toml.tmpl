@@ -1,0 +1,79 @@
+{{- $name := "Leon Li" -}}
+{{- $email := "qianthinking@gmail.com" -}}
+{{- $github_user := "qianthinking" -}}
+{{- $computer_name := default "leon-computer-name" (env "CM_computer_name") -}}
+{{- $hostname := default "leon" (env "CM_hostname") -}}
+
+{{- if (env "ASK") }}
+{{-   $computer_name = promptString "Computer Name" $computer_name -}}
+{{-   $hostname = promptString "Hostname" $hostname -}}
+{{-   $name = promptString "Full Name" $name -}}
+{{-   $email = promptString "Email" $email -}}
+{{-   $github_user = promptString "GitHub Username" $github_user -}}
+{{- end }}
+
+[data]
+
+    name = {{ $name | quote }}
+    email = {{ $email | quote }}
+    github_user = {{ $github_user | quote }}
+    computer_name = {{ $computer_name | quote }}
+    hostname = {{ $hostname | quote }}
+
+    [data.packages]
+        # 通用包，所有系统都会安装
+        common = [
+            "curl",
+            "zsh",
+            "git",
+            "tmux",
+            "jq",
+            "tree",
+            "fzf",      # fzf 本身
+            "ripgrep",  # 高性能 grep 替代品 (rg)
+            "bat",      # 带语法高亮的 cat
+            "fd-find",  # fd, 高性能 find 替代品 (在某些系统上包名可能是 fd)
+            "eza",      # exa 的一个活跃分支，ls 替代品
+            "git-delta",# git diff 高亮
+            "dust",     # 更好的 du
+            "duf",      # 更好的 df
+            "glances",  # 系统监控
+            "ccache",
+            "shellcheck",
+            "gh",
+            "httpie",
+            "chroma",
+        ]
+
+        darwin_taps = [
+            "laishulu/homebrew"
+        ]
+
+        darwin = [
+            "coreutils", # 提供 gnu 版本的命令行工具
+            "findutils",
+            "grep",
+            "macism",
+        ]
+
+        [data.packages.linux]
+            ubuntu = [
+                "build-essential",
+                "zlib1g-dev", # python 等编译时需要
+                "fcitx5",
+                "fcitx5-chinese-addons"
+            ]
+            fedora = [
+                "make",
+                "automake",
+                "gcc",
+                "gcc-c++",
+                "kernel-devel",
+                "fcitx5",
+                "fcitx5-chinese-addon"
+            ]
+            arch = [
+                "base-devel",
+                "fcitx5",
+                "fcitx5-chinese-addon"
+            ]

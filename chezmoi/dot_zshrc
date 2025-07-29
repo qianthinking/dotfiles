@@ -83,7 +83,7 @@ zstyle ':omz:update' mode reminder  # disable automatic updates
 # HIST_STAMPS="mm/dd/yyyy"
 
 # Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=.oh-my-zsh_custom # this will make p10k instant prompt fail
+ZSH_CUSTOM=$HOME/.oh-my-zsh-custom
 
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
@@ -113,8 +113,9 @@ plugins=(
   tmux
   uv
   z
-  #zsh-autosuggestions
-  #zsh-syntax-highlighting
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+  zsh-completions
 )
 
 source $ZSH/oh-my-zsh.sh
