@@ -19,6 +19,11 @@ alias ch='chezmoi'
 alias che='chezmoi edit --apply'
 alias cch='cd ~/.local/share/chezmoi'
 
+# cd Aliases
+alias chd='cd ~/Downloads'
+alias chw='cd ~/workspace'
+alias cho='cd ~/opensource'
+
 # function to re-add a directory for chezmoi with forget and add
 function chreadd() {
   if [[ -d "$1" ]]; then
