@@ -1,0 +1,6 @@
+plugins/zsh-autosuggestions
+plugins/zsh-syntax-highlighting
+plugins/zsh-completions
+plugins/example
+themes/
+example.zsh

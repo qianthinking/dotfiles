@@ -44,3 +44,6 @@ function chreaddall() {
     fi
   done <<< "$manage_directories"
 }
+
+# Function to create a directory and change into it
+mcd() { mkdir -p "$1" && cd "$1" }
