@@ -12,11 +12,6 @@
 {{-   $github_user = promptString "GitHub Username" $github_user -}}
 {{- end }}
 
-{{- $delta_is_not_installed := true }}
-{{- if (contains "delta" (output "bash" "-c" "command -v delta || true")) }}
-{{-   $delta_is_not_installed = false }}
-{{- end }}
-
 [data]
 
     name = {{ $name | quote }}
