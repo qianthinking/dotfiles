@@ -1713,16 +1713,16 @@
 
       # 使用内嵌颜色代码 %F{...} 和精选的 Nerd Font 图标构建显示字符串
       # 主图标：☸ (nf-dev-kubernetes)，颜色为 K8s 官方蓝 (39)
-      local k8s_display_text="%F{39}☸"
+      local k8s_display_text="☸️"
 
-      # Context 图标： (nf-fa-cubes)，颜色为青色 (74)
+      # Context 图标： (nf-fa-cubes)
       if [[ -n "$K8S_CONTEXT" ]]; then
-        k8s_display_text+="%F{74}  $K8S_CONTEXT" # 注意图标后的空格
+        k8s_display_text+="%F{39}  $K8S_CONTEXT" # 注意图标后的空格
       fi
 
-      # Namespace 图标： (nf-fa-bookmark)，颜色为黄色 (220)
+      # Namespace 图标： (nf-fa-bookmark)
       if [[ -n "$K8S_NAMESPACE" ]]; then
-        k8s_display_text+="%F{220}  $K8S_NAMESPACE" # 注意图标后的空格
+        k8s_display_text+="%F{74}  $K8S_NAMESPACE" # 注意图标后的空格
       fi
 
       # 只调用一次 p10k segment，渲染我们精心构造的字符串
