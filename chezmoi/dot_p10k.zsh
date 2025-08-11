@@ -33,6 +33,7 @@
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
     # =========================[ Line #1 ]=========================
     os_icon                 # os identifier
+    k8s_info
     virtualenv              # python virtual environment (https://docs.python.org/3/library/venv.html)
     anaconda                # conda environment (https://conda.io/)
     # pyenv                   # python environment (https://github.com/pyenv/pyenv)
@@ -1701,6 +1702,34 @@
     # and regular prompts.
     prompt_example
   }
+
+  # ======================== CUSTOM KUBERNETES SEGMENT (Advanced) ======================
+  #
+  # 分段显示 K8s 信息，为 Context 和 Namespace 提供独立的图标和颜色。
+  #
+  function prompt_k8s_info() {
+    # 只有在至少一个 k8s 环境变量被设置时才继续
+    if [[ -n "$K8S_CONTEXT" || -n "$K8S_NAMESPACE" ]]; then
+
+      # 使用内嵌颜色代码 %F{...} 和精选的 Nerd Font 图标构建显示字符串
+      # 主图标：☸ (nf-dev-kubernetes)，颜色为 K8s 官方蓝 (39)
+      local k8s_display_text="%F{39}☸"
+
+      # Context 图标： (nf-fa-cubes)，颜色为青色 (74)
+      if [[ -n "$K8S_CONTEXT" ]]; then
+        k8s_display_text+="%F{74}  $K8S_CONTEXT" # 注意图标后的空格
+      fi
+
+      # Namespace 图标： (nf-fa-bookmark)，颜色为黄色 (220)
+      if [[ -n "$K8S_NAMESPACE" ]]; then
+        k8s_display_text+="%F{220}  $K8S_NAMESPACE" # 注意图标后的空格
+      fi
+
+      # 只调用一次 p10k segment，渲染我们精心构造的字符串
+      p10k segment -t "$k8s_display_text"
+    fi
+  }
+  # ======================== END CUSTOM KUBERNETES SEGMENT =======================
 
   # User-defined prompt segments can be customized the same way as built-in segments.
   # typeset -g POWERLEVEL9K_EXAMPLE_FOREGROUND=208
