@@ -62,7 +62,16 @@ fi
 # fzf 安装后脚本
 if [ -f "$(brew --prefix)/opt/fzf/install" ]; then
   echo "Running fzf post-install script..."
-  "$(brew --prefix)/opt/fzf/install" --all
+  if ! is_installed fzf; then
+    echo "fzf is not installed, running install script..."
+    {{- if eq .chezmoi.os "darwin" -}}
+      PATH=$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH "$(brew --prefix)/opt/fzf/install" --all
+    {{- else -}}
+      "$(brew --prefix)/opt/fzf/install" --all
+    {{- end }}
+  else
+    echo "fzf is already installed, skipping install script."
+  fi
 fi
 
 
