@@ -250,6 +250,59 @@ return {
             vim.keymap.set('n', 'gi', builtin.lsp_implementations, { noremap = true, silent = true }) -- 跳转到实现
             vim.keymap.set('n', 'gr', builtin.lsp_references, { noremap = true, silent = true }) -- 查看引用
             vim.keymap.set('n', 'gd', builtin.lsp_definitions, { noremap = true, silent = true }) -- 跳转到定义
+
+            -- 在新标签页中打开定义的自定义函数
+            local function lsp_definitions_in_new_tab()
+                -- 先保存当前位置到jumplist
+                vim.cmd('normal! m`')
+
+                -- 获取定义列表
+                local params = vim.lsp.util.make_position_params()
+                vim.lsp.buf_request(0, 'textDocument/definition', params, function(err, result, ctx)
+                    if err or not result or vim.tbl_isempty(result) then
+                        print("No definitions found")
+                        return
+                    end
+
+                    -- 如果只有一个定义，直接在新标签页打开
+                    if #result == 1 then
+                        local definition = result[1]
+                        local uri = definition.uri or definition.targetUri
+                        local range = definition.range or definition.targetRange or definition.targetSelectionRange
+
+                        if uri then
+                            local filepath = vim.uri_to_fname(uri)
+                            vim.cmd('tabnew ' .. vim.fn.fnameescape(filepath))
+
+                            if range and range.start then
+                                local line = range.start.line + 1
+                                local col = range.start.character
+                                vim.api.nvim_win_set_cursor(0, {line, col})
+                            end
+                        end
+                    else
+                        -- 如果有多个定义，使用telescope但在新标签页打开选中的项
+                        builtin.lsp_definitions({
+                            attach_mappings = function(prompt_bufnr, map)
+                                map('i', '<CR>', function()
+                                    local selected_entry = action_state.get_selected_entry()
+                                    actions.close(prompt_bufnr)
+
+                                    if selected_entry and selected_entry.filename then
+                                        vim.cmd('tabnew ' .. vim.fn.fnameescape(selected_entry.filename))
+                                        if selected_entry.lnum then
+                                            vim.api.nvim_win_set_cursor(0, {selected_entry.lnum, selected_entry.col or 0})
+                                        end
+                                    end
+                                end)
+                                return true
+                            end
+                        })
+                    end
+                end)
+            end
+
+            vim.keymap.set('n', 'gt', lsp_definitions_in_new_tab, { noremap = true, silent = true, desc = "Go to definition in new tab" })
             vim.keymap.set('n', '<leader>fs', builtin.lsp_document_symbols, { noremap = true, silent = true }) -- 显示当前文档的符号
             vim.keymap.set('n', '<leader>fw', builtin.lsp_dynamic_workspace_symbols, { noremap = true, silent = true }) -- 显示工作区符号
 
