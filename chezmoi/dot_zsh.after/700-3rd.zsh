@@ -5,6 +5,7 @@ test -s "${HOME}/.scm_breeze/scm_breeze.sh" && source "${HOME}/.scm_breeze/scm_b
 
 
 export CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=1
+export OPENAI_API_KEY=""
 
 # =================================================================
 # PNPM Configuration (Robust Cross-Platform Version)
