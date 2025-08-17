@@ -82,6 +82,7 @@ fi
 DISTRO_ID={{ .chezmoi.osRelease.id | quote }}
 COMMON_PACKAGES="{{ .packages.common | join " " }}"
 DISTRO_PACKAGES=""
+SNAP_PACKAGES=""
 INSTALL_CMD=""
 UPDATE_CMD=""
 
@@ -90,8 +91,11 @@ case "$DISTRO_ID" in
     UPDATE_CMD="sudo apt-get update"
     INSTALL_CMD="sudo apt-get install -y"
     DISTRO_PACKAGES="{{ .packages.linux.ubuntu | join " " }}"
-    # 包名差异处理
-    COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/ripgrep/ripgrep/g') # 名称一致
+    SNAP_PACKAGES="{{ .packages.linux.ubuntu_snap | join " " }}"
+    # 包名差异处理 - 从 apt 包列表中移除 snap 包
+    for snap_pkg in $SNAP_PACKAGES; do
+      COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed "s/$snap_pkg//g")
+    done
     ;;
   "fedora"|"centos")
     UPDATE_CMD="sudo dnf check-update"
@@ -126,6 +130,29 @@ $UPDATE_CMD
 
 echo "Installing packages for $DISTRO_ID: $PACKAGES_TO_INSTALL"
 $INSTALL_CMD $PACKAGES_TO_INSTALL
+
+# Install snap packages for Ubuntu/Debian
+case "$DISTRO_ID" in
+  "ubuntu"|"debian")
+    if [ -n "$SNAP_PACKAGES" ] && [ "$(echo $SNAP_PACKAGES | xargs)" != "" ]; then
+      # 确保 snapd 已安装
+      if ! is_installed snap; then
+        echo "Installing snapd..."
+        sudo apt-get install -y snapd
+      fi
+      
+      echo "Installing snap packages: $SNAP_PACKAGES"
+      for snap_pkg in $SNAP_PACKAGES; do
+        if snap list | grep -q "^$snap_pkg "; then
+          echo "$snap_pkg is already installed via snap."
+        else
+          echo "Installing $snap_pkg via snap..."
+          sudo snap install "$snap_pkg"
+        fi
+      done
+    fi
+    ;;
+esac
 
 
 {{- else -}}
