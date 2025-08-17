@@ -96,7 +96,7 @@ case "$DISTRO_ID" in
   "fedora"|"centos")
     UPDATE_CMD="sudo dnf check-update"
     INSTALL_CMD="sudo dnf install -y"
-    DISTRO_PACKAGES="{{ .packages.linux.centos | join " " }}"
+    DISTRO_PACKAGES="{{ .packages.linux.fedora | join " " }}"
     # 包名差异处理
     COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/fd-find/fd/g')
     COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/bat/bat/g') # 在某些老版本CentOS可能叫 batcat
