@@ -4,6 +4,12 @@ test -s "${HOME}/.scm_breeze/scm_breeze.sh" && source "${HOME}/.scm_breeze/scm_b
 
 [[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
 
+[ -s "${HOME}/.bun/_bun" ] && source "${HOME}/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
 
 export CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=1
 
