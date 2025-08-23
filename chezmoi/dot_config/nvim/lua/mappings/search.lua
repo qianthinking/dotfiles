@@ -13,6 +13,11 @@ map("n", ",cf", ':let @* = expand("%:p")<CR>', { silent = true })
 map("n", ",ch", ':let @* = expand("%:~")<CR>', { silent = true })
 map("n", ",cr", ':let @* = expand("%:.")<CR>', { silent = true })
 map("n", ",cn", ':let @* = expand("%:t")<CR>', { silent = true })
+-- 复制选中区域内容及其文件位置信息
+map("x", ",cs", ":<C-u>lua vim.fn.setreg('*', vim.fn.expand('%') .. ':' .. vim.fn.line(\"'<\") .. '-' .. vim.fn.line(\"'>\") .. '\\n' .. table.concat(vim.fn.getline(vim.fn.line(\"'<\"), vim.fn.line(\"'>\")), '\\n'))<CR>", { silent = true, desc = "Copy selection with file location" })
+
+
+
 
 -- 跳转到下一个诊断
 map('n', '<leader>dn', function()
