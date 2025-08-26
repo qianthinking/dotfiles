@@ -19,13 +19,13 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   # Add GNU coreutils to PATH if installed via Homebrew
   GNU_PACKAGE_PATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin"
   if [ -d "$GNU_PACKAGE_PATH" ]; then
-    export PATH="$GNU_PACKAGE_PATH:$PATH"
+    path_prepend $GNU_PACKAGE_PATH
   fi
 
   if [ -d "$HOMEBREW_PREFIX/opt/mysql-client/bin" ]; then
     # Add MySQL client binaries to PATH if installed via Homebrew
     # This is useful for accessing MySQL commands like `mysql`, `mysqldump`, etc.
-    export PATH="$HOMEBREW_PREFIX/opt/mysql-client/bin:$PATH"
+    path_prepend "$HOMEBREW_PREFIX/opt/mysql-client/bin"
   fi
 
   test -d "$HOMEBREW_PREFIX/opt/openssl@1.1" && export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$HOMEBREW_PREFIX/opt/openssl@1.1"

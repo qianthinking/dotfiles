@@ -1,5 +1,4 @@
 test -s "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-path_prepend "$HOME/bin" "$HOME/.local/bin" "${KREW_ROOT:-$HOME/.krew}" "$GOPATH/bin"
 test -s "${HOME}/.scm_breeze/scm_breeze.sh" && source "${HOME}/.scm_breeze/scm_breeze.sh"
 
 [[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"

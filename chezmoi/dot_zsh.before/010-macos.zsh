@@ -16,5 +16,5 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     # Intel Mac
     export HOMEBREW_PREFIX="/usr/local"
   fi
-
+  path_prepend "$HOMEBREW_PREFIX/bin"
 fi
