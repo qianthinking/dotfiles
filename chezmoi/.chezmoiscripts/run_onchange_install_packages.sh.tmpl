@@ -105,6 +105,14 @@ case "$DISTRO_ID" in
     COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/fd-find/fd/g')
     COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/bat/bat/g') # 在某些老版本CentOS可能叫 batcat
     ;;
+  "alibaba")
+    UPDATE_CMD="sudo dnf check-update"
+    INSTALL_CMD="sudo dnf install -y"
+    DISTRO_PACKAGES="{{ .packages.linux.alibaba | join " " }}"
+    # 包名差异处理 - Alibaba Linux 与 Fedora 类似
+    COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/fd-find/fd/g')
+    COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/bat/bat/g')
+    ;;
   "arch")
     UPDATE_CMD="sudo pacman -Syu --noconfirm"
     INSTALL_CMD="sudo pacman -S --noconfirm"
