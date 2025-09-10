@@ -38,8 +38,36 @@ map("n", "to", function()
 end, { silent = true, desc = "Toggle outline (Saga/Aerial)" })
 map("n", "ta", ":AvanteToggle<CR>", { silent = true })
 
--- Keybinding to toggle inlay hints
-map("n", "th", function() require("lsp-inlayhints").toggle() end, { silent = true })
+-- Keybinding to toggle inlay hints (built-in API, works with basedpyright)
+map("n", "th", function()
+  -- check server capability first to avoid confusing no-ops
+  local clients = vim.lsp.get_clients and vim.lsp.get_clients({ bufnr = 0 }) or vim.lsp.get_active_clients({ bufnr = 0 })
+  local has_inlay = false
+  for _, c in ipairs(clients or {}) do
+    local caps = c.server_capabilities or {}
+    if caps.inlayHintProvider then
+      has_inlay = true
+      break
+    end
+  end
+  if not has_inlay then
+    vim.notify("No LSP inlayHintProvider available for this buffer", vim.log.levels.WARN)
+    return
+  end
+
+  local ih = vim.lsp.inlay_hint
+  local buf = 0
+  if type(ih) == "table" and ih.enable and ih.is_enabled then
+    local enabled = ih.is_enabled({ bufnr = buf })
+    ih.enable(not enabled, { bufnr = buf })
+  elseif type(ih) == "function" then
+    -- Neovim 0.9 compatibility: toggles when second arg is nil
+    ih(buf, nil)
+  else
+    vim.notify("Inlay hint API not available in this Neovim version", vim.log.levels.WARN)
+    return
+  end
+end, { silent = true, desc = "Toggle inlay hints" })
 
 -- 快捷键：切换诊断功能的开关
 map("n", "td", function()
