@@ -104,3 +104,16 @@ vim.opt.cmdheight = 2
 vim.opt.updatetime = 200
 vim.opt.shortmess:append("c")
 vim.opt.signcolumn = "yes"
+
+-- Ensure sessions save/restore window layout and buffer state fully
+vim.opt.sessionoptions = {
+  "buffers",    -- save all buffers
+  "curdir",     -- restore current directory
+  "folds",      -- save folds
+  "help",       -- save help windows
+  "tabpages",   -- restore tab pages and windows
+  "winsize",    -- restore window sizes
+  "winpos",     -- restore window position (GUI)
+  "terminal",   -- include terminal buffers
+  "localoptions" -- include window-local options
+}

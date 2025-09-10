@@ -6,40 +6,78 @@ return {
         config = function()
             local Path = require("plenary.path")
             local session_manager = require("session_manager")
-            local config = require("session_manager.config")
+            local sm_config = require("session_manager.config")
 
-            -- 自定义会话目录，基于当前工作目录
-            local function get_session_dir()
-                local cwd = vim.fn.getcwd()
-                -- 将当前工作目录转换为一个适合用作目录名的字符串
-                local dir_name = cwd:gsub("/", "_"):gsub(":", "_")
-                local session_dir = Path:new(vim.fn.stdpath("data"), "sessions", dir_name)
-                session_dir:mkdir({ parents = true })
-                return session_dir
+            -- 使用默认 sessions_dir（单一目录），避免跨项目回退
+            session_manager.setup({
+                autoload_mode = sm_config.AutoloadMode.Disabled, -- 我们自行控制何时自动加载
+                autosave_last_session = false, -- 禁用全局 last session 回退
+                autosave_ignore_filetypes = { "gitcommit", "gitrebase", "gitconfig" },
+            })
+
+            -- 以 CWD 为键的会话文件: <stdpath('data')>/sessions/<sanitized_cwd>.vim
+            local function sessions_root()
+                local p = Path:new(vim.fn.stdpath("data"), "sessions")
+                p:mkdir({ parents = true, exist_ok = true })
+                return p
             end
 
-            session_manager.setup({
-                sessions_dir = get_session_dir(), -- 动态生成会话目录
-                autoload_mode = config.AutoloadMode.CurrentDir, -- 自动加载当前目录的会话
-                autosave_last_session = true, -- 自动保存最后一个会话
-                autosave_ignore_filetypes = { "gitcommit", "gitrebase", "gitconfig" }, -- 忽略的文件类型
+            local function sanitize_dir(dir)
+                return dir:gsub("[/:\\]", "_")
+            end
 
-                -- 在加载会话之前检查当前目录是否匹配
-                before_load = function(session_path)
-                    local expected_session_dir = get_session_dir()
-                    local actual_session_dir = Path:new(session_path):parent().filename
-                    if expected_session_dir ~= actual_session_dir then
-                        vim.notify("Session directory does not match current working directory. Not loading session.", vim.log.levels.WARN)
-                        return false -- 取消加载
+            local function session_file_for_cwd()
+                local name = sanitize_dir(vim.fn.getcwd()) .. ".vim"
+                return Path:new(sessions_root(), name).filename
+            end
+
+            -- 启动时：仅当当前目录存在会话，且未传入文件参数时才加载
+            vim.api.nvim_create_autocmd("VimEnter", {
+                once = true,
+                callback = function()
+                    if vim.g.vscode then return end
+                    -- 允许 nvim 或 nvim . 自动加载（目录参数也视为无文件参数）
+                    if vim.fn.argc() > 0 then
+                        if not (vim.fn.argc() == 1 and vim.fn.isdirectory(vim.fn.argv(0)) == 1) then
+                            return
+                        end
                     end
-                    return true -- 允许加载
+                    local file = session_file_for_cwd()
+                    if vim.loop.fs_stat(file) then
+                        vim.cmd("silent! source " .. vim.fn.fnameescape(file))
+                        -- Re-apply colorscheme and ensure highlights/plugins attach after restore
+                        vim.schedule(function()
+                            pcall(vim.cmd, "silent! colorscheme nordfox")
+                            -- Ensure Treesitter attaches (if available)
+                            local ok_ts = pcall(require, "nvim-treesitter.configs")
+                            if ok_ts and vim.treesitter and vim.treesitter.start then
+                                for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+                                    if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].buftype == "" then
+                                        pcall(vim.treesitter.start, buf)
+                                    end
+                                end
+                            else
+                                -- Fallback: trigger BufReadPost for each listed buffer
+                                for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+                                    if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].buftype == "" then
+                                        pcall(vim.api.nvim_exec_autocmds, "BufReadPost", { buffer = buf, modeline = false })
+                                    end
+                                end
+                            end
+                        end)
+                    end
                 end,
             })
 
-            -- 每次切换目录时更新会话目录
-            vim.api.nvim_create_autocmd("DirChanged", {
+            -- 退出前自动保存当前目录会话
+            vim.api.nvim_create_autocmd("VimLeavePre", {
                 callback = function()
-                    session_manager.setup({ sessions_dir = get_session_dir() })
+                    if vim.g.vscode then return end
+                    local file = session_file_for_cwd()
+                    -- 确保目录存在
+                    sessions_root():mkdir({ parents = true, exist_ok = true })
+                    -- 保存会话（覆盖）
+                    vim.cmd("silent! mksession! " .. vim.fn.fnameescape(file))
                 end,
             })
         end,
