@@ -12,8 +12,11 @@ return {
 
       mason.setup()
       mason_lspconfig.setup({
-        ensure_installed = { "lua_ls", "ruff", "ts_ls", "bashls", "jsonls", "html", "cssls", "yamlls", "dockerls", "vimls" },
+        ensure_installed = { "lua_ls", "ruff", "basedpyright", "ts_ls", "bashls", "jsonls", "html", "cssls", "yamlls", "dockerls", "vimls" },
         automatic_installation = true,
+        -- Avoid duplicate clients: let us configure some servers manually
+        -- and prevent mason-lspconfig from auto-enabling them.
+        automatic_enable = { exclude = { "basedpyright", "ruff" } },
       })
 
       vim.api.nvim_create_autocmd("FileType", {
@@ -201,26 +204,30 @@ return {
         },
       })
       setup_server("bashls", { filetypes = { "sh", "bash", "zsh" } })
-      --[[ setup_server("basedpyright", { ]]
-      --[[   settings = { ]]
-      --[[     basedpyright = { ]]
-      --[[       analysis = { ]]
-      --[[         diagnosticMode = "openFilesOnly", ]]
-      --[[         autoImportCompletions = true, ]]
-      --[[         typeCheckingMode = "standard", ]]
-      --[[         autoSearchPaths = true,        -- 自动搜索库路径 ]]
-      --[[         useLibraryCodeForTypes = true, -- 使用库代码推导类型 ]]
-      --[[         inlayHints = { ]]
-      --[[           variableTypes = true,        -- 启用变量类型提示 ]]
-      --[[           functionReturnTypes = true,  -- 启用函数返回类型提示 ]]
-      --[[           parameterNames = true,       -- 启用参数名称提示 ]]
-      --[[           callArgumentNames = true,    -- 启用调用参数名称提示 ]]
-      --[[           genericTypes = true,         -- 启用泛型类型提示 ]]
-      --[[         }, ]]
-      --[[       }, ]]
-      --[[     }, ]]
-      --[[   }, ]]
-      --[[ }) ]]
+      -- Python: use basedpyright for symbols/hover/rename etc.
+      -- Ruff handles linting/diagnostics; both can coexist safely.
+      --[[ setup_server("basedpyright", {}) ]]
+      setup_server("basedpyright", {
+        settings = {
+          basedpyright = {
+            analysis = {
+              diagnosticMode = "openFilesOnly",
+              autoImportCompletions = true,
+              typeCheckingMode = "standard",
+              autoSearchPaths = true,        -- 自动搜索库路径
+              useLibraryCodeForTypes = true, -- 使用库代码推导类型
+              inlayHints = {
+                variableTypes = true,        -- 启用变量类型提示
+                functionReturnTypes = true,  -- 启用函数返回类型提示
+                parameterNames = true,       -- 启用参数名称提示
+                callArgumentNames = true,    -- 启用调用参数名称提示
+                genericTypes = true,         -- 启用泛型类型提示
+              },
+            },
+          },
+        },
+      })
+
       --[[]]
       --[[ setup_server("pylsp", { ]]
       --[[   settings = { ]]
@@ -272,7 +279,6 @@ return {
   },
   {
     "glepnir/lspsaga.nvim",
-    event = "BufRead",
     config = function()
       require("lspsaga").setup({
         code_action = {
