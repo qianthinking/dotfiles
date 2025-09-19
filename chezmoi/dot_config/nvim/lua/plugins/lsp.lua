@@ -216,6 +216,10 @@ return {
               typeCheckingMode = "standard",
               autoSearchPaths = true,        -- 自动搜索库路径
               useLibraryCodeForTypes = true, -- 使用库代码推导类型
+              --[[ -- 强约束：禁止裸泛型（如 `dict`, `list` 等不带类型参数） ]]
+              --[[ diagnosticSeverityOverrides = { ]]
+              --[[   reportMissingTypeArgument = "error", ]]
+              --[[ }, ]]
               inlayHints = {
                 variableTypes = true,        -- 启用变量类型提示
                 functionReturnTypes = true,  -- 启用函数返回类型提示
