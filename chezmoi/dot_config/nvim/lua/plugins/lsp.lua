@@ -6,7 +6,6 @@ return {
       "mason-org/mason-lspconfig.nvim",
     },
     config = function()
-      local lspconfig = require("lspconfig")
       local mason = require("mason")
       local mason_lspconfig = require("mason-lspconfig")
 
@@ -36,16 +35,12 @@ return {
           if not mason_registry.is_installed("jdtls") then
             vim.cmd("MasonInstall jdtls")
           end
-          lspconfig.jdtls.setup({})
+          vim.lsp.enable('jdtls')
         end,
       })
 
       -- Default capabilities for cmp integration
-      local capabilities = vim.tbl_deep_extend(
-        "force",
-        require("lspconfig").util.default_config.capabilities,
-        require("cmp_nvim_lsp").default_capabilities()
-      )
+      local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
       local function quick_fix()
         -- 获取当前行的诊断信息
@@ -159,15 +154,9 @@ return {
         end,
       })
 
-      -- Lazy load LSP configurations
-      local function setup_server(server, config)
-        lspconfig[server].setup(vim.tbl_deep_extend("force", {
-          capabilities = capabilities,
-        }, config or {}))
-      end
-
       -- File-type specific LSP configurations
-      setup_server("lua_ls", {
+      vim.lsp.config('lua_ls', {
+        capabilities = capabilities,
         filetypes = { "lua" },
         settings = {
           Lua = {
@@ -178,6 +167,7 @@ return {
           },
         },
       })
+      vim.lsp.enable('lua_ls')
       local inlayHints = {
         includeInlayParameterNameHints = "all",
         includeInlayParameterNameHintsWhenArgumentMatchesName = false,
@@ -188,7 +178,8 @@ return {
         includeInlayFunctionLikeReturnTypeHints = true,
         includeInlayEnumMemberValueHints = true,
       }
-      setup_server("ts_ls", {
+      vim.lsp.config('ts_ls', {
+        capabilities = capabilities,
         settings = {
           typescript = {
             inlayHints = inlayHints,
@@ -203,11 +194,17 @@ return {
           "vue",
         },
       })
-      setup_server("bashls", { filetypes = { "sh", "bash", "zsh" } })
+      vim.lsp.enable('ts_ls')
+      
+      vim.lsp.config('bashls', { 
+        capabilities = capabilities,
+        filetypes = { "sh", "bash", "zsh" } 
+      })
+      vim.lsp.enable('bashls')
       -- Python: use basedpyright for symbols/hover/rename etc.
       -- Ruff handles linting/diagnostics; both can coexist safely.
-      --[[ setup_server("basedpyright", {}) ]]
-      setup_server("basedpyright", {
+      vim.lsp.config('basedpyright', {
+        capabilities = capabilities,
         settings = {
           basedpyright = {
             analysis = {
@@ -231,6 +228,7 @@ return {
           },
         },
       })
+      vim.lsp.enable('basedpyright')
 
       --[[]]
       --[[ setup_server("pylsp", { ]]
@@ -258,10 +256,10 @@ return {
       --[[   }, ]]
       --[[ }) ]]
 
-      setup_server("ruff", {
+      vim.lsp.config('ruff', {
+        capabilities = capabilities,
       })
-      --[[ lspconfig.ruff.setup({ ]]
-      --[[ }) ]]
+      vim.lsp.enable('ruff')
 
       vim.api.nvim_create_autocmd("CursorHold", {
         callback = function()
