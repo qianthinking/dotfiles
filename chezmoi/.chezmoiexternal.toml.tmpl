@@ -32,3 +32,10 @@
     type = "git-repo"
     url = "https://github.com/scmbreeze/scm_breeze.git"
     refreshPeriod = "168h"
+{{- if eq .chezmoi.os "linux" }}
+[".local/bin/systemctl-tui"]
+    type = "file"
+    url = "https://github.com/rgwood/systemctl-tui/releases/latest/download/systemctl-tui-{{ .chezmoi.arch }}-unknown-linux-musl"
+    executable = true
+    refreshPeriod = "168h"
+{{- end }}
