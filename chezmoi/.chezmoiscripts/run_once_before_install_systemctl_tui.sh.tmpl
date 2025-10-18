@@ -1,0 +1,11 @@
+#!/bin/bash
+{{- if eq .chezmoi.os "linux" }}
+set -e
+
+if ! command -v systemctl-tui >/dev/null 2>&1; then
+  echo "Installing systemctl-tui..."
+  curl -fsSL https://raw.githubusercontent.com/rgwood/systemctl-tui/master/install.sh | bash
+else
+  echo "systemctl-tui is already installed."
+fi
+{{- end }}
