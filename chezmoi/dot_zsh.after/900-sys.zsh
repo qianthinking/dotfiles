@@ -24,7 +24,7 @@ export SAVEHIST=10000000
 
 export GOPATH="$HOME/.go"
 
-path_prepend "${GOPATH:-$HOME/.go}/bin" "${KREW_ROOT:-$HOME/.krew}/bin" "$HOME/.local/bin"
+path_prepend "$HOME/.asdf/shims" "${GOPATH:-$HOME/.go}/bin" "${KREW_ROOT:-$HOME/.krew}/bin" "$HOME/.local/bin"
 
 test -s "${HOME}/.zsh.after.local" && source "${HOME}/.zsh.after.local"
 
