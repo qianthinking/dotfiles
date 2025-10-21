@@ -195,10 +195,10 @@ return {
         },
       })
       vim.lsp.enable('ts_ls')
-      
-      vim.lsp.config('bashls', { 
+
+      vim.lsp.config('bashls', {
         capabilities = capabilities,
-        filetypes = { "sh", "bash", "zsh" } 
+        filetypes = { "sh", "bash", "zsh" }
       })
       vim.lsp.enable('bashls')
       -- Python: use basedpyright for symbols/hover/rename etc.
@@ -444,4 +444,11 @@ return {
       require("lsp-file-operations").setup()
     end,
   },
+  {
+    "qvalentin/helm-ls.nvim",
+    ft = "helm",
+    opts = {
+      -- leave empty or see below
+    },
+  }
 }
