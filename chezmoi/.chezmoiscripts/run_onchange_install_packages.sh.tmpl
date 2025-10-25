@@ -134,7 +134,16 @@ if [ -z "$(echo $PACKAGES_TO_INSTALL | xargs)" ]; then
 fi
 
 echo "Updating package list for $DISTRO_ID..."
-$UPDATE_CMD
+case "$DISTRO_ID" in
+  "fedora"|"centos"|"alibaba"|"alinux")
+    # dnf/yum 返回 100 表示有可用更新，这不是一个错误。
+    $UPDATE_CMD || [ $? -eq 100 ]
+    ;;
+  *)
+    # 对于 apt 和 pacman, 非 0 退出码通常表示真正的错误。
+    $UPDATE_CMD
+    ;;
+esac
 
 echo "Installing packages for $DISTRO_ID: $PACKAGES_TO_INSTALL"
 $INSTALL_CMD $PACKAGES_TO_INSTALL
