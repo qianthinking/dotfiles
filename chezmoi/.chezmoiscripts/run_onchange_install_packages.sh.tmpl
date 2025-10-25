@@ -144,9 +144,6 @@ case "$DISTRO_ID" in
       DISTRO_PACKAGES="{{ .packages.linux.alibaba | join " " }}"
 
       # 4) 名称对齐（EPEL 的命名差异）
-      # fd 的包叫 fd-find（可执行名 fdfind），bat 和 ShellCheck 大小写如下
-      COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/\bfd\b/fd-find/g')
-      COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/\bbat\b/bat/g')
       COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/\bshellcheck\b/ShellCheck/g')
 
       # 5) 按 EL 版本决定跳过清单
