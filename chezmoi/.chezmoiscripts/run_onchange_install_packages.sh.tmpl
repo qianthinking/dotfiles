@@ -121,9 +121,10 @@ case "$DISTRO_ID" in
       if ! command -v gh >/dev/null; then
           if ! dnf repolist | grep -q "gh-cli"; then
               echo "Adding GitHub CLI repository..."
+              # This command ensures the 'config-manager' subcommand is available
               sudo dnf install -y 'dnf-command(config-manager)'
+              # This adds the repository. DNF will handle the GPG key automatically during installation.
               sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
-              sudo rpm --import https://cli.github.com/packages/rpm/gh-cli-key.gpg
           fi
       fi
 
