@@ -111,7 +111,7 @@ case "$DISTRO_ID" in
 
       # 1. Install EPEL (Extra Packages for Enterprise Linux) repository
       # It provides many common packages that are not in the default repos.
-      if ! dnf repolist | grep -q "epel"; then
+      if ! dnf repolist enabled | grep -q "epel"; then
         echo "Installing EPEL repository..."
         # alinux 3 is compatible with RHEL 8
         sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
@@ -121,33 +121,29 @@ case "$DISTRO_ID" in
       if ! command -v gh >/dev/null; then
           if ! dnf repolist | grep -q "gh-cli"; then
               echo "Adding GitHub CLI repository..."
-              # This command ensures the 'config-manager' subcommand is available
               sudo dnf install -y 'dnf-command(config-manager)'
-              # This adds the repository. DNF will handle the GPG key automatically during installation.
               sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
           fi
       fi
 
-      # 3. Enable the CodeReady Builder (CRB) / PowerTools repository
-      # This is needed for build dependencies and some packages like fcitx5
-      echo "Enabling CRB (CodeReady Builder) repository..."
-      sudo dnf config-manager --set-enabled crb
+      # 3. Enable the PowerTools repository (named 'crb' in RHEL 9+)
+      # This is needed for build dependencies and some packages.
+      echo "Enabling PowerTools repository..."
+      # On alinux 3 / RHEL 8, the repo is called 'powertools'.
+      if ! dnf repolist enabled | grep -q "powertools"; then
+        sudo dnf config-manager --set-enabled powertools
+      fi
 
       UPDATE_CMD="sudo dnf check-update"
       INSTALL_CMD="sudo dnf install -y"
       DISTRO_PACKAGES="{{ .packages.linux.alibaba | join " " }}"
 
       # 4. Handle package name differences for alinux/EPEL
-      # Note: fd-find is the package, but it creates the `fd` command.
       COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/fd-find/fd-find/g')
-      # The package for bat is just `bat` in EPEL
       COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/bat/bat/g')
-      # Package name is case-sensitive in EPEL
       COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed 's/shellcheck/ShellCheck/g')
 
       # 5. Remove packages known to be unavailable in EPEL 8 to prevent errors
-      # eza, dust, duf, and chroma are not packaged in the standard repos.
-      # You would need to install these manually or via another method (e.g., brew).
       echo "Note: The following packages are not available in alinux/EPEL and will be skipped: eza, dust, duf, chroma"
       for pkg in eza dust duf chroma; do
         COMMON_PACKAGES=$(echo "$COMMON_PACKAGES" | sed "s/\b$pkg\b//g")
