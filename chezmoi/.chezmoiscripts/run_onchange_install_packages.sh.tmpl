@@ -157,13 +157,19 @@ case "$DISTRO_ID" in
       fi
 
       # 6) 可选：提供一个“存在才装”的函数，保证健壮性（即使列表里仍有缺包）
-      pkg_exists() { dnf -q list "$1" &>/dev/null; }
+      pkg_exists() { dnf -q list "$1" >/dev/null 2>&1; }
       install_if_available() {
-        local want=() p
+        want=""
         for p in "$@"; do
-          if pkg_exists "$p"; then want+=("$p"); else echo ">> Skipping unavailable: $p"; fi
+          if pkg_exists "$p"; then
+            want="$want $p"
+          else
+            echo ">> Skipping unavailable: $p"
+          fi
         done
-        ((${#want[@]})) && sudo dnf -y install "${want[@]}"
+        if [ -n "$want" ]; then
+          sudo dnf -y install $want
+        fi
       }
 
       echo "==> Installing base/common packages…"
@@ -171,9 +177,9 @@ case "$DISTRO_ID" in
 
       # 7) 在 EL9 上，尝试安装此前想要的工具；装不到则提示/跳过
       if [ "$ELMAJ" = "9" ]; then
-        EXTRA_WANTED=( eza dust duf chroma fcitx5 fcitx5-chinese-addons )
+        EXTRA_WANTED="eza dust duf chroma fcitx5 fcitx5-chinese-addons"
         echo "==> Trying extra tools on EL9…"
-        install_if_available "${EXTRA_WANTED[@]}"
+        install_if_available $EXTRA_WANTED
       fi
       ;;
   "arch")
