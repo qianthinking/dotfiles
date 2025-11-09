@@ -149,14 +149,6 @@ return {
         "powerman/vim-plugin-AnsiEsc",
         event = { "BufReadPost", "BufNewFile" },
     },
-    {
-        "ojroques/vim-oscyank",
-        cmd = { "OSCYank" },
-        config = function()
-            -- 可选：设置 OSC Yank 自动使用剪贴板
-            vim.g.oscyank_silent = true
-        end,
-    },
     -- Plug 'Keithbsmiley/investigate.vim' "gK for doc
     -- Plug 'bogado/file-line' "open file with line number
 }

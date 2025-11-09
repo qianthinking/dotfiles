@@ -11,17 +11,17 @@ return {
 
       -- 将系统寄存器写入钩到 OSC52
       local function copy(lines, _)
-        require("osc52").copy(table.concat(lines, "\n"))
+        require('osc52').copy(table.concat(lines, '\n'))
       end
 
       local function paste()
-        return {vim.fn.getreg('"'), vim.fn.getregtype('"')}
+        return {vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('')}
       end
 
       vim.g.clipboard = {
-        name = "osc52",
-        copy = {["+"] = copy, ["*"] = copy},
-        paste = {["+"] = paste, ["*"] = paste},
+        name = 'osc52',
+        copy = {['+'] = copy, ['*'] = copy},
+        paste = {['+'] = paste, ['*'] = paste},
       }
 
       -- 常见设置：使用系统剪贴板
