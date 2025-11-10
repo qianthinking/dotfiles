@@ -14,15 +14,19 @@ return {
         require('osc52').copy(table.concat(lines, '\n'))
       end
 
-      local function paste()
-        return {vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('')}
-      end
+      -- OSC52 主要用于远程环境的复制
+      -- 本地环境让 Neovim 使用默认的系统剪贴板
+      if os.getenv("SSH_TTY") then
+        local function paste()
+          return {vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('')}
+        end
 
-      vim.g.clipboard = {
-        name = 'osc52',
-        copy = {['+'] = copy, ['*'] = copy},
-        paste = {['+'] = paste, ['*'] = paste},
-      }
+        vim.g.clipboard = {
+          name = 'osc52',
+          copy = {['+'] = copy, ['*'] = copy},
+          paste = {['+'] = paste, ['*'] = paste},
+        }
+      end
 
       -- 常见设置：使用系统剪贴板
       vim.opt.clipboard = "unnamedplus"
