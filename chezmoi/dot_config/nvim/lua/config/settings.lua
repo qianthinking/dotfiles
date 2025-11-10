@@ -98,10 +98,22 @@ vim.api.nvim_create_autocmd("InsertLeave", {
   end,
 })
 
+-- 优化粘贴性能
+vim.api.nvim_create_autocmd("InsertEnter", {
+  callback = function()
+    vim.schedule(function()
+      vim.opt.paste = false  -- 确保不使用传统 paste 模式
+    end)
+  end,
+})
+
 vim.opt.cmdheight = 2
 vim.opt.updatetime = 200
 vim.opt.shortmess:append("c")
 vim.opt.signcolumn = "yes"
+
+-- 启用系统剪贴板
+vim.opt.clipboard = "unnamedplus"
 
 -- Ensure sessions save/restore window layout and buffer state fully
 vim.opt.sessionoptions = {

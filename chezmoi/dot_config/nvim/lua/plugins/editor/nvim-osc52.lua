@@ -1,35 +1,27 @@
 return {
   {
     "ojroques/nvim-osc52",
+    -- 只在 SSH 环境加载此插件
+    cond = function()
+      return os.getenv("SSH_TTY") ~= nil
+    end,
+    event = "VeryLazy",
     config = function()
       local osc52 = require("osc52")
       osc52.setup({
-        max_length = 0,       -- 0 为不限制（有些终端/SSH 会有限制，默认就好）
+        max_length = 0,
         silent = true,
         trim = false,
       })
 
-      -- 将系统寄存器写入钩到 OSC52
-      local function copy(lines, _)
-        require('osc52').copy(table.concat(lines, '\n'))
-      end
-
-      -- OSC52 主要用于远程环境的复制
-      -- 本地环境让 Neovim 使用默认的系统剪贴板
-      if os.getenv("SSH_TTY") then
-        local function paste()
-          return {vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('')}
-        end
-
-        vim.g.clipboard = {
-          name = 'osc52',
-          copy = {['+'] = copy, ['*'] = copy},
-          paste = {['+'] = paste, ['*'] = paste},
-        }
-      end
-
-      -- 常见设置：使用系统剪贴板
-      vim.opt.clipboard = "unnamedplus"
+      -- 远程 yank 时，通过 OSC52 同步到本地剪贴板
+      vim.api.nvim_create_autocmd("TextYankPost", {
+        callback = function()
+          if vim.v.event.operator == 'y' then
+            require('osc52').copy(table.concat(vim.v.event.regcontents, '\n'))
+          end
+        end,
+      })
     end,
   }
 }
