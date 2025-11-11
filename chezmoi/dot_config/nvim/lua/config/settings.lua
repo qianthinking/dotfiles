@@ -1,6 +1,8 @@
 -- Make sure to setup `mapleader` and `maplocalleader` before
 -- loading lazy.nvim so that mappings are correct.
 -- This is also a good place to setup other settings (vim.opt)
+local env = require("config.env")
+
 vim.g.mapleader = ","
 vim.g.maplocalleader = ","
 -- vim.g.maplocalleader = "\\"
@@ -113,7 +115,22 @@ vim.opt.shortmess:append("c")
 vim.opt.signcolumn = "yes"
 
 -- 启用系统剪贴板
-vim.opt.clipboard = "unnamedplus"
+local function should_use_system_clipboard()
+  if vim.g.vscode then
+    return true
+  end
+  if env.is_ssh() then
+    return false
+  end
+  -- Prefer builtin/system clipboard only when a provider exists locally.
+  return env.has_system_clipboard()
+end
+
+if should_use_system_clipboard() then
+  vim.opt.clipboard = "unnamedplus"
+else
+  vim.opt.clipboard = ""
+end
 
 -- Ensure sessions save/restore window layout and buffer state fully
 vim.opt.sessionoptions = {

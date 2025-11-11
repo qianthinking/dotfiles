@@ -1,9 +1,11 @@
+local env = require("config.env")
+
 return {
   {
     "ojroques/nvim-osc52",
-    -- 只在 SSH 环境加载此插件
+    -- 只在 SSH 或缺少系统剪贴板时加载此插件
     cond = function()
-      return os.getenv("SSH_TTY") ~= nil
+      return env.is_ssh() or not env.has_system_clipboard()
     end,
     event = "VeryLazy",
     config = function()
