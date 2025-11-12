@@ -18,6 +18,7 @@ alias glp="git lp"
 
 # chezmoi Aliases
 alias ch='chezmoi'
+alias chdr='chezmoi diff -r'
 alias che='chezmoi edit --apply'
 alias cch='cd ~/.local/share/chezmoi'
 
