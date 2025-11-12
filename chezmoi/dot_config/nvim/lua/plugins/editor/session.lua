@@ -69,14 +69,35 @@ return {
                 end,
             })
 
-            -- 退出前自动保存当前目录会话
+            -- 退出前自动保存当前目录会话（仅包含当前 CWD 下的普通文件）
             vim.api.nvim_create_autocmd("VimLeavePre", {
                 callback = function()
                     if vim.g.vscode then return end
+
+                    local cwd = vim.fn.getcwd()
+                    if cwd == "" then
+                        return
+                    end
+                    local cwd_prefix = vim.fn.fnamemodify(cwd, ":p")
+                    if not cwd_prefix:match("/$") then
+                        cwd_prefix = cwd_prefix .. "/"
+                    end
+
+                    -- 过滤掉不在当前 CWD 下的普通文件 buffer，避免跨目录 session 污染
+                    for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+                        if vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].buftype == "" then
+                            local name = vim.api.nvim_buf_get_name(bufnr)
+                            if name ~= "" then
+                                local abs = vim.fn.fnamemodify(name, ":p")
+                                if not vim.startswith(abs, cwd_prefix) then
+                                    pcall(vim.api.nvim_buf_delete, bufnr, { force = true })
+                                end
+                            end
+                        end
+                    end
+
                     local file = session_file_for_cwd()
-                    -- 确保目录存在
                     sessions_root():mkdir({ parents = true, exist_ok = true })
-                    -- 保存会话（覆盖）
                     vim.cmd("silent! mksession! " .. vim.fn.fnameescape(file))
                 end,
             })
