@@ -55,51 +55,6 @@ return {
     -- set termguicolors to enable highlight groups
     vim.opt.termguicolors = true
 
-    local function avante_add_files()
-      local api = require('nvim-tree.api')
-      local node = api.tree.get_node_under_cursor()
-      if not node then return end
-
-      -- 兼容不同版本的节点字段
-      local filepath = node.absolute_path or node.path or node.id
-      if not filepath or filepath == '' then return end
-
-      local relative_path = require('avante.utils').relative_path(filepath)
-
-      local sidebar = require('avante').get()
-      local open = sidebar and sidebar.is_open and sidebar:is_open()
-
-      -- 确保 Avante 侧栏已打开
-      if not open then
-        require('avante.api').ask()
-        sidebar = require('avante').get()
-      end
-
-      -- 添加所选文件/目录
-      sidebar.file_selector:add_selected_file(relative_path)
-
-      -- 如果是首次打开 Avante，尽量移除可能被自动加入的 NvimTree 占位项
-      if not open then
-        pcall(function()
-          local view = require('nvim-tree.view')
-          local bufnr = view.get_bufnr()
-          if bufnr and vim.api.nvim_buf_is_loaded(bufnr) then
-            local name = vim.api.nvim_buf_get_name(bufnr)              -- 例如 "NvimTree_1"
-            if name and name ~= '' then
-              -- 试着用多种可能的标识移除
-              pcall(function() sidebar.file_selector:remove_selected_file(name) end)
-              local tail = name:match('[^/\\]+$')
-              if tail then
-                pcall(function() sidebar.file_selector:remove_selected_file(tail) end)
-              end
-            end
-            pcall(function() sidebar.file_selector:remove_selected_file('NvimTree') end)
-            pcall(function() sidebar.file_selector:remove_selected_file('NvimTree_1') end)
-          end
-        end)
-      end
-    end
-
     --
     -- This function has been generated from your
     --   view.mappings.list
@@ -206,13 +161,6 @@ return {
       vim.keymap.set('n', 's', api.node.open.horizontal, opts('Open: Horizontal Split'))
       vim.keymap.set('n', 'i', api.node.open.vertical, opts('Open: Vertical Split'))
 
-      -- Avante specific mappings
-      vim.keymap.set(
-        'n',
-        'va',
-        avante_add_files,
-        { desc = 'Avante: add current node', buffer = bufnr, noremap = true, silent = true, nowait = true }
-      )
     end
 
     -- OR setup with some options

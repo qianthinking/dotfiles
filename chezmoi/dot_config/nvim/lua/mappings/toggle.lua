@@ -39,7 +39,6 @@ map("n", "to", function()
     vim.cmd("AerialToggle")
   end
 end, { silent = true, desc = "Toggle outline (Saga/Aerial)" })
-map("n", "ta", ":AvanteToggle<CR>", { silent = true })
 
 -- Keybinding to toggle inlay hints (built-in API, works with basedpyright)
 map("n", "th", function()
