@@ -138,9 +138,10 @@
   summary = true
 [mergetool]
   prompt = false
+	keepBackup = false
 [mergetool "nvimdiff"]
-  cmd = nvim -d "$LOCAL" "$MERGED" "$REMOTE"
-  keepBackup = false
+  cmd = nvim -d $LOCAL $BASE $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+	trustExitCode = false
 [apply]
   whitespace = nowarn
 [branch]
