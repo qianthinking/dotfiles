@@ -144,3 +144,13 @@ vim.opt.sessionoptions = {
   "terminal",   -- include terminal buffers
   "localoptions" -- include window-local options
 }
+
+vim.opt.diffopt = {
+  "internal",             -- 使用 Neovim 内置 diff 库
+  "filler",               -- 显示空行以对齐 diff
+  "closeoff",             -- 关闭 diff 时同时也关闭对应的窗口
+  "algorithm:histogram",  -- 使用 histogram 算法（比默认的 patience 更好）
+  "indent-heuristic",     -- 启用缩进启发式算法
+  "linematch:60",         -- 【关键】启用行内差异匹配！数字 60 是权重
+  "iwhite"               -- 忽略空白字符的差异
+}

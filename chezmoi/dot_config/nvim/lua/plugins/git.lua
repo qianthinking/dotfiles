@@ -42,4 +42,63 @@ return {
             end, { noremap = true, silent = true, desc = "Toggle Git line blame" })
         end,
     },
+    {
+        "sindrets/diffview.nvim",
+        event = "VeryLazy", -- 或者 cmd = "DiffviewOpen"
+        keys = {
+          {
+            "<leader>gd",
+            "<cmd>DiffviewOpen<cr>",
+            desc = "打开 Diffview (解决冲突/查看Diff)"
+          },
+          {
+            "<leader>gh",
+            "<cmd>DiffviewFileHistory %<cr>",
+            desc = "查看当前文件历史"
+          },
+        },
+        dependencies = { "nvim-lua/plenary.nvim" },
+        config = function()
+          local actions = require("diffview.actions")
+
+          require("diffview").setup({
+            -- 1. 核心配置：视图布局
+            view = {
+              -- 普通 Diff 模式下的布局 (git diff)
+              default = {
+                layout = "diff2_horizontal", -- 左右对比
+              },
+              -- 解决冲突模式下的布局 (重点在这里)
+              merge_tool = {
+                -- 布局模式：
+                -- "diff1_plain"   : 只有结果窗口
+                -- "diff3_horizontal": 左中右 (Local, Base, Remote)，无结果窗口
+                -- "diff3_mixed"     : 默认。左(Local) 右(Remote)，下(Result)。 **不显示 Base**
+                -- "diff4_mixed"     : 最强模式。上左(Local) 上中(Base) 上右(Remote)，下(Result)
+                layout = "diff4_mixed",
+
+                disable_diagnostics = true, -- 解决冲突时关闭 LSP 报错，防止红线干扰
+              },
+              file_history = {
+                layout = "diff2_horizontal",
+              },
+            },
+
+            -- 2. 快捷键配置 (根据习惯修改)
+            keymaps = {
+              view = {
+                -- 在 diff 视图中，快速关闭
+                ["q"] = actions.close,
+                ["<Esc>"] = actions.close,
+              },
+              file_panel = {
+                ["q"] = actions.close,
+              },
+              file_history_panel = {
+                ["q"] = actions.close,
+              }
+            },
+          })
+        end,
+    }
 }
