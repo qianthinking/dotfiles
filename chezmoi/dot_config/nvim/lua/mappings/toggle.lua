@@ -9,6 +9,9 @@ end, { silent = true })
 map("n", "tl", ":AnsiEsc<CR>", { silent = true })
 map("n", "tn", ":NvimTreeToggle<CR>", { silent = true })
 
+-- nvim-treesitter-context
+map("n", "tc", ":TSContext toggle<CR>", { silent = true })
+
 -- Telescope
 map("n", "tt", ":Telescope resume<CR>", { silent = true })
 
@@ -79,3 +82,9 @@ map("n", "td", function()
     vim.notify("已启用诊断功能", vim.log.levels.INFO)
   end
 end, { silent = true })
+
+-- Toggle Copilot suggestion
+map("n", "ts", function()
+  require("copilot.suggestion").toggle_auto_trigger()
+  vim.notify("Copilot auto trigger toggled", vim.log.levels.INFO)
+end, { silent = true, desc = "Toggle Copilot suggestion" })
