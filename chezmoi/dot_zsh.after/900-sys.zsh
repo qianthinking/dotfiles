@@ -28,8 +28,8 @@ path_prepend "$HOME/.asdf/shims" "${GOPATH:-$HOME/.go}/bin" "${KREW_ROOT:-$HOME/
 
 test -s "${HOME}/.zsh.after.local" && source "${HOME}/.zsh.after.local"
 
+path_prepend "$HOME/bin"
+
 # activate .venv if exists in current directory or any parent directory
 # put this at the end of .zshrc to ensure it runs after all other configurations
 activate
-
-path_prepend "$HOME/bin"
