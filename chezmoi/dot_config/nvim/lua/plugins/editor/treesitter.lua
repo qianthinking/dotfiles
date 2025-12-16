@@ -27,9 +27,9 @@ return {
                   enable = true,
                   keymaps = {
                       init_selection = "gnn",
-                      node_incremental = "grn",
-                      scope_incremental = "grc",
-                      node_decremental = "grm",
+                      node_incremental = "gni",
+                      scope_incremental = "gnc",
+                      node_decremental = "gnd",
                   },
               },
 
