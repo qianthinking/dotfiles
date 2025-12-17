@@ -246,7 +246,7 @@ return {
             end, { noremap = true, silent = true })
             vim.keymap.set('n', '<leader>fp', builtin.help_tags, { noremap = true, silent = true })
             vim.keymap.set('n', '<leader>fe', builtin.diagnostics, { noremap = true, silent = true }) -- 显示所有诊断信息
-            vim.keymap.set('n', 'go', builtin.lsp_type_definitions, { noremap = true, silent = true }) -- 跳转到类型定义
+            vim.keymap.set('n', 'got', builtin.lsp_type_definitions, { noremap = true, silent = true }) -- 跳转到类型定义
             vim.keymap.set('n', 'gi', builtin.lsp_implementations, { noremap = true, silent = true }) -- 跳转到实现
             vim.keymap.set('n', 'gr', builtin.lsp_references, { noremap = true, silent = true }) -- 查看引用
             vim.keymap.set('n', 'gd', builtin.lsp_definitions, { noremap = true, silent = true }) -- 跳转到定义

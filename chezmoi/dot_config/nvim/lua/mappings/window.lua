@@ -1,21 +1,23 @@
 local map = vim.keymap.set
 
+local opts = { silent = true, noremap = true }
+
 -- Tab
-map("n", "H", ":tabprevious<CR>", { silent = true })
-map("n", "L", ":tabnext<CR>", { silent = true })
-map("n", "<C-t>c", ":tabnew<CR>", { silent = true })
-map("n", "<C-t>e", ":tabe %<CR>", { silent = true })
-map("n", "<C-t>h", ":tabprevious<CR>", { silent = true })
-map("n", "<C-t>l", ":tabnext<CR>", { silent = true })
-map("n", "<leader>rd", ":redraw!<CR>", { silent = true })
+map("n", "H", ":tabprevious<CR>", opts)
+map("n", "L", ":tabnext<CR>", opts)
+map("n", "<C-t>c", ":tabnew<CR>", opts)
+map("n", "<C-t>e", ":tabe %<CR>", opts)
+map("n", "<C-t>h", ":tabprevious<CR>", opts)
+map("n", "<C-t>l", ":tabnext<CR>", opts)
+map("n", "<leader>rd", ":redraw!<CR>", opts)
 
 -- 跳转到第 1 到第 9 个标签页
 for i = 1, 9 do
-    map("n", "<leader>" .. i, i .. "gt", { silent = true })
+    map("n", "<leader>" .. i, i .. "gt", opts)
 end
 
 -- 跳转到最后一个标签页
-map("n", "<leader>0", ":tablast<CR>", { silent = true })
+map("n", "<leader>0", ":tablast<CR>", opts)
 
 -- 全局变量存储上一次访问的标签页编号
 vim.g.lasttab = 1
@@ -23,7 +25,7 @@ vim.g.lasttab = 1
 -- 快捷键 T：跳转到上一次访问的标签页
 vim.keymap.set("n", "T", function()
     vim.cmd("tabn " .. vim.g.lasttab)
-end, { silent = true })
+end, opts)
 
 -- 自动命令：记录离开标签页时的编号
 vim.api.nvim_create_autocmd("TabLeave", {
@@ -33,9 +35,9 @@ vim.api.nvim_create_autocmd("TabLeave", {
     end,
 })
 
-map("n", "<leader>ww", ":w<CR>", { silent = true })
-map("n", "<leader>xx", ":x<CR>", { silent = true })
-map("n", "<leader>qq", ":qa<CR>", { silent = true })
+map("n", "<leader>ww", ":w<CR>", opts)
+map("n", "<leader>xx", ":x<CR>", opts)
+map("n", "<leader>qq", ":qa<CR>", opts)
 
 -- Define the function as a global function by adding it to the _G table
 _G.CloseWindowOrKillBuffer = function()
@@ -118,8 +120,12 @@ _G.CloseWindowOrKillBuffer = function()
 end
 
 -- Window
-map("n", "Q", CloseWindowOrKillBuffer, { silent = true })
+map("n", "Q", CloseWindowOrKillBuffer, opts)
 
 -- Locate the file in the nvim-tree
 map("n", "<C-\\>", ":NvimTreeFindFile<CR>", {silent = true})
 
+vim.keymap.set("t", "<C-h>", [[<C-\><C-n><Cmd>TmuxNavigateLeft<CR>]],  opts)
+vim.keymap.set("t", "<C-j>", [[<C-\><C-n><Cmd>TmuxNavigateDown<CR>]],  opts)
+vim.keymap.set("t", "<C-k>", [[<C-\><C-n><Cmd>TmuxNavigateUp<CR>]],    opts)
+vim.keymap.set("t", "<C-l>", [[<C-\><C-n><Cmd>TmuxNavigateRight<CR>]], opts)
