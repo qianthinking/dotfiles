@@ -403,7 +403,11 @@ return {
       })
 
       cmp.setup.cmdline(":", {
-        mapping = cmp.mapping.preset.cmdline(),
+        mapping = cmp.mapping.preset.cmdline({
+          -- 恢复 <C-p>/<C-n> 为浏览命令历史，而非补全选择
+          ["<C-p>"] = { c = function() vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Up>", true, true, true), "n", true) end },
+          ["<C-n>"] = { c = function() vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Down>", true, true, true), "n", true) end },
+        }),
         sources = {
           { name = "path" },
           { name = "cmdline" },
