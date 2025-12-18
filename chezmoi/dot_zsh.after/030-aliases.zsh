@@ -15,6 +15,8 @@ alias gplr='git pull --rebase'
 alias gpc='git push --set-upstream origin "$VCS_STATUS_LOCAL_BRANCH"'
 alias gl='git l'
 alias glp="git lp"
+alias PL='GIT_PAGER="less -r"'
+alias PD='GIT_PAGER="delta --paging=always"'
 
 # chezmoi Aliases
 alias ch='chezmoi'
