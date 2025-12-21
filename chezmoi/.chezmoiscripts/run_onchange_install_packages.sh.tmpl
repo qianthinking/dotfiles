@@ -240,6 +240,24 @@ case "$DISTRO_ID" in
     ;;
 esac
 
+# Install npm global packages for Linux (requires sudo)
+NPM_GLOBAL_PACKAGES="{{ .packages.linux_npm_global | join " " }}"
+if [ -n "$NPM_GLOBAL_PACKAGES" ] && [ "$(echo $NPM_GLOBAL_PACKAGES | xargs)" != "" ]; then
+  if is_installed npm; then
+    echo "Installing npm global packages: $NPM_GLOBAL_PACKAGES"
+    for npm_pkg in $NPM_GLOBAL_PACKAGES; do
+      if npm list -g "$npm_pkg" >/dev/null 2>&1; then
+        echo "$npm_pkg is already installed globally via npm."
+      else
+        echo "Installing $npm_pkg globally via npm (with sudo)..."
+        sudo npm install -g "$npm_pkg"
+      fi
+    done
+  else
+    echo "npm is not installed. Skipping npm global packages: $NPM_GLOBAL_PACKAGES"
+    echo "Please install Node.js/npm first to install these packages."
+  fi
+fi
 
 {{- else -}}
 echo "Unsupported OS: {{ .chezmoi.os }}. Skipping package installation."
