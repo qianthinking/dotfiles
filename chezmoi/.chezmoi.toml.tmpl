@@ -64,6 +64,11 @@
             "procs"
         ]
 
+        # Linux 上需要通过 npm 全局安装的包 (需要 sudo)
+        linux_npm_global = [
+            "git-split-diffs"
+        ]
+
         [data.packages.linux]
             ubuntu = [
                 "build-essential",
@@ -96,8 +101,3 @@
                 "gcc-c++",
                 "kernel-devel"
             ]
-
-        # Linux 上需要通过 npm 全局安装的包 (需要 sudo)
-        linux_npm_global = [
-            "git-split-diffs"
-        ]
