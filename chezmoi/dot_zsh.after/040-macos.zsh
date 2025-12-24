@@ -16,6 +16,11 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
   fi
 
+  # Initialize Atuin shell history manager if installed via Homebrew
+  if [ -f "$HOMEBREW_PREFIX/bin/atuin" ]; then
+    eval "$($HOMEBREW_PREFIX/bin/atuin init zsh)"
+  fi
+
   # Add GNU coreutils to PATH if installed via Homebrew
   GNU_PACKAGE_PATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin"
   if [ -d "$GNU_PACKAGE_PATH" ]; then
