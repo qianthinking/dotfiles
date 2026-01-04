@@ -3,6 +3,9 @@ alias psa="ps aux"
 alias pse="ps -ef"
 alias psg="ps aux | grep"
 
+# opencode
+alias oc='opencode'
+
 # System Aliases
 alias top='glances'
 
