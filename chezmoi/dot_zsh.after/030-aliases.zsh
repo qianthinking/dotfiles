@@ -6,6 +6,10 @@ alias psg="ps aux | grep"
 # opencode
 alias oc='opencode'
 
+# git commit
+alias czh='commit-zh'
+alias cen='commit-en'
+
 # System Aliases
 alias top='glances'
 
