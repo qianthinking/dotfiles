@@ -22,6 +22,12 @@ brew update
 
 # 2. 准备包列表
 PACKAGES_TO_INSTALL="{{ .packages.common | join " " }} {{ .packages.darwin | join " " }}"
+
+{{- if eq .chezmoi.arch "arm64" }}
+# 添加 ARM64 专用包
+PACKAGES_TO_INSTALL="$PACKAGES_TO_INSTALL {{ .packages.darwin_arm64 | join " " }}"
+{{- end }}
+
 # 处理包名差异: fd-find 在 brew 中是 fd
 PACKAGES_TO_INSTALL=$(echo "$PACKAGES_TO_INSTALL" | sed 's/fd-find/fd/g')
 
