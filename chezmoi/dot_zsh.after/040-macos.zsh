@@ -8,8 +8,8 @@
 # and all its child processes.
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  # Add Homebrew's zsh completions to fpath.
-  fpath=($HOMEBREW_PREFIX/share/zsh/functions $HOMEBREW_PREFIX/share/zsh/site-functions $fpath)
+  # Homebrew's site-functions and zsh functions are already in fpath via
+  # system defaults (/etc/zshrc). No need to add them again.
 
   # Set up Homebrew environment variables (PATH, etc.) if brew is installed.
   if [ -f "$HOMEBREW_PREFIX/bin/brew" ]; then

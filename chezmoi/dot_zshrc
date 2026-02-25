@@ -93,7 +93,8 @@ ZSH_CUSTOM=$HOME/.oh-my-zsh-custom
 plugins=(
   alias-finder
   aliases
-  asdf # require https://github.com/asdf-vm/asdf
+  # asdf/gh: completions provided by Homebrew (fpath), OMZ plugins just waste
+  # ~150ms regenerating _asdf/_gh that get shadowed anyway.
   colored-man-pages
   colorize # require https://github.com/alecthomas/chroma
   command-not-found
@@ -103,7 +104,6 @@ plugins=(
   encode64
   extract
   genpass
-  gh
   git
   history-substring-search # require https://github.com/zsh-users/zsh-history-substring-search
   httpie # require https://github.com/httpie/cli
