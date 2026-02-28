@@ -14,6 +14,43 @@ backward-kill-word-match() {
 zle -N backward-kill-word-match
 bindkey '^W' backward-kill-word-match
 
+# alt+.  insert last word; repeat to go back in history
+# alt+-  reverse direction: go forward toward more recent commands
+# Both share state — you can freely alternate between them.
+# alt+,  after alt+./-, cycle through words of the SAME command (wraps around)
+
+_insert-last-word-direction() {
+  if [[ $KEYS == $'\e-' ]]; then
+    zle .insert-last-word 1
+  else
+    zle .insert-last-word -- -1
+  fi
+}
+zle -N insert-last-word _insert-last-word-direction
+bindkey '^[-' insert-last-word
+
+_copy-earlier-word-cycling() {
+  emulate -L zsh
+  typeset -g __cew_index __cew_widget
+
+  if [[ -n $__cew_index && $WIDGET == $LASTWIDGET ]]; then
+    (( __cew_index-- ))
+  elif [[ $LASTWIDGET == *insert-last-word ]]; then
+    __cew_index=-2
+    __cew_widget=$LASTWIDGET
+  else
+    __cew_index=-1
+  fi
+
+  # Try inserting; if it fails (past first word), wrap to last word (-1)
+  if ! zle ${__cew_widget:-.insert-last-word} 0 $__cew_index 2>/dev/null; then
+    __cew_index=-1
+    zle ${__cew_widget:-.insert-last-word} 0 $__cew_index
+  fi
+}
+zle -N copy-earlier-word _copy-earlier-word-cycling
+bindkey '^[,' copy-earlier-word
+
 alias micromamba=conda
 
 ulimit -n 65535
