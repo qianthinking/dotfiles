@@ -87,3 +87,13 @@ map("n", "ts", function()
   require("copilot.suggestion").toggle_auto_trigger()
   vim.notify("Copilot auto trigger toggled", vim.log.levels.INFO)
 end, { silent = true, desc = "Toggle Copilot suggestion" })
+
+-- require('render-markdown').toggle()
+map("n", "tm", function()
+  local status_ok, render_markdown = pcall(require, "render-markdown")
+  if not status_ok then
+    vim.notify("render-markdown plugin not found", vim.log.levels.WARN)
+    return
+  end
+  render_markdown.toggle()
+end, { silent = true, desc = "Toggle markdown preview" })
