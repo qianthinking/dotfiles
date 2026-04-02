@@ -185,9 +185,11 @@
   navigate = true
   dark = true
   syntax-theme = Dracula
-  plus-style = syntax "#004000"
-  plus-emph-style = syntax "#008000"
-  minus-style = syntax "#3f0001"
+  plus-style = syntax "#002800"
+  plus-emph-style = syntax "#005000"
+  minus-style = syntax "#261818"
+  minus-non-emph-style = syntax "#261818"
+  minus-emph-style = syntax bold "#442020"
 [split-diffs]
   syntax-highlighting-theme=dracula
 [delta "interactive"]
