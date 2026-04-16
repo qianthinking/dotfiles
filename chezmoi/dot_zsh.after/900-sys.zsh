@@ -65,7 +65,11 @@ setopt HIST_REDUCE_BLANKS
 
 export GOPATH="$HOME/.go"
 
-path_prepend "$HOME/.asdf/shims" "${GOPATH:-$HOME/.go}/bin" "${KREW_ROOT:-$HOME/.krew}/bin" "$HOME/.local/bin"
+path_prepend "${GOPATH:-$HOME/.go}/bin" "${KREW_ROOT:-$HOME/.krew}/bin" "$HOME/.local/bin"
+
+if command -v mise >/dev/null 2>&1; then
+  eval "$(mise activate zsh)"
+fi
 
 test -s "${HOME}/.zsh.after.local" && source "${HOME}/.zsh.after.local"
 

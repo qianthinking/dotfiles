@@ -93,8 +93,8 @@ ZSH_CUSTOM=$HOME/.oh-my-zsh-custom
 plugins=(
   alias-finder
   aliases
-  # asdf/gh: completions provided by Homebrew (fpath), OMZ plugins just waste
-  # ~150ms regenerating _asdf/_gh that get shadowed anyway.
+  # gh: completions provided by Homebrew (fpath), OMZ plugin just wastes
+  # ~150ms regenerating _gh that gets shadowed anyway.
   colored-man-pages
   colorize # require https://github.com/alecthomas/chroma
   command-not-found
