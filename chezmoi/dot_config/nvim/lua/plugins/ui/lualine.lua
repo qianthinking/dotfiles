@@ -116,7 +116,6 @@ return {
                     lualine_c = {
                       {'filename', path = 1}, -- Filename with full path.
                       {
-                        "aerial", -- Component from nvim-treesitter-textobjects (aerial.nvim).
                         -- The separator to be used to separate symbols in status line.
                         sep = " ) ",
                         -- The number of symbols to render top-down.

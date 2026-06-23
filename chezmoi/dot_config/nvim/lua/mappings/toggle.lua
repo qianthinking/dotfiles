@@ -15,7 +15,7 @@ map("n", "tc", ":TSContext toggle<CR>", { silent = true })
 -- Telescope
 map("n", "tt", ":Telescope resume<CR>", { silent = true })
 
--- Outline (prefer Lspsaga; fallback to Aerial)
+-- Outline
 map("n", "to", function()
   local clients
   if vim.lsp.get_clients then
@@ -33,12 +33,8 @@ map("n", "to", function()
     end
   end
 
-  if has_symbols then
-    vim.cmd("Lspsaga outline")
-  else
-    vim.cmd("AerialToggle")
-  end
-end, { silent = true, desc = "Toggle outline (Saga/Aerial)" })
+  vim.cmd("Lspsaga outline")
+end, { silent = true, desc = "Toggle outline (Saga)" })
 
 -- Keybinding to toggle inlay hints (built-in API, works with basedpyright)
 map("n", "th", function()

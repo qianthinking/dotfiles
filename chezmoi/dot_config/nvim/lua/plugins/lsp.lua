@@ -330,20 +330,6 @@ return {
       vim.keymap.set({"n", "v"}, "<leader>ca", saga_filtered_codeaction, { silent = true })
     end,
   },
-  {
-    "stevearc/aerial.nvim",
-    dependencies = { "nvim-treesitter/nvim-treesitter" },
-    config = function()
-      require("aerial").setup({
-        filter_kind = false,
-        backends = { "treesitter", "lsp" },
-        layout = {
-          default_direction = "right",
-          max_width = { 40 },
-        },
-      })
-    end,
-  },
   -- {
   --   'stevearc/stickybuf.nvim',
   --   opts = {},
@@ -413,26 +399,6 @@ return {
           { name = "cmdline" },
         },
       })
-    end,
-  },
-  {
-    "stevearc/aerial.nvim",
-    dependencies = { "nvim-treesitter/nvim-treesitter" },
-    cmd = { "AerialToggle" }, -- Load on command
-    config = function()
-      require("aerial").setup({
-        backends = { "treesitter", "lsp" }, -- Use Tree-sitter and LSP for symbols
-        layout = {
-          default_direction = "right",      -- Panel on the right
-        },
-        attach_mode = "global",             -- Attach to all buffers
-        keymaps = {
-          ["<CR>"] = "actions.jump",        -- Jump to symbol
-          ["<C-s>"] = "actions.scroll",     -- Scroll to symbol in the code
-        },
-      })
-      -- Optional keymap to toggle the panel
-      -- vim.keymap.set("n", "<leader>o", ":AerialToggle!<CR>", { noremap = true, silent = true })
     end,
   },
   {
