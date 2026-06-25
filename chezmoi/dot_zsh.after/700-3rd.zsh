@@ -3,10 +3,10 @@ test -s "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 # ensure it before scm_breeze which may change command
 path_prepend "$HOME/bin"
 
-# Only load scm_breeze in real TTY shells; AI coding tools run `zsh -i`
-# with piped stdout, where scm_breeze's `_safe_eval` function wrappers
-# break heredoc/multiline command parsing.
-[[ -t 1 ]] && test -s "${HOME}/.scm_breeze/scm_breeze.sh" && source "${HOME}/.scm_breeze/scm_breeze.sh"
+# Skip scm_breeze under `zsh -c` (used by AI coding tools), where its
+# `_safe_eval` function wrappers break heredoc/multiline command parsing.
+# Real terminals (incl. tmux windows) never set ZSH_EXECUTION_STRING.
+[[ -z "$ZSH_EXECUTION_STRING" ]] && test -s "${HOME}/.scm_breeze/scm_breeze.sh" && source "${HOME}/.scm_breeze/scm_breeze.sh"
 
 [[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
 
