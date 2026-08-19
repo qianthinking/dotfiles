@@ -21,7 +21,7 @@
     hostname = {{ $hostname | quote }}
 
     [data.packages]
-        # 通用包，所有系统都会安装
+        # Linux 通用包
         common = [
             "curl",
             "zsh",
@@ -45,29 +45,6 @@
             "chroma",
             "imagemagick",
             "btop"
-        ]
-
-        darwin_taps = [
-            "laishulu/homebrew"
-        ]
-
-        darwin = [
-            "coreutils", # 提供 gnu 版本的命令行工具
-            "findutils",
-            "grep",
-            "macism",
-            "git-split-diffs",
-            "argc",
-            "fastfetch",
-            "procs",
-            "atuin",
-            "mise",
-            "aicommit2"
-        ]
-
-        # macOS ARM64 专用包
-        darwin_arm64 = [
-            "macmon"  # 仅支持 ARM64 架构
         ]
 
         # Linux 上需要通过 npm 全局安装的包 (需要 sudo)

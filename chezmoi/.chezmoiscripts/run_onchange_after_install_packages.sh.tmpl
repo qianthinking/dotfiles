@@ -1,6 +1,10 @@
 #!/bin/sh
 set -e
 
+{{- if eq .chezmoi.os "darwin" }}
+# Brewfile hash: {{ include "dot_Brewfile.tmpl" | sha256sum }}
+{{- end }}
+
 echo "Running intelligent system package installer..."
 
 {{- /* 定义一个辅助函数来检查包是否已安装 */}}
@@ -11,76 +15,23 @@ is_installed() {
 {{- if eq .chezmoi.os "darwin" -}}
 {{- /* --- macOS --- */}}
 
-# 1. 安装 Homebrew (幂等)
+# 安装 Homebrew（幂等）
 if ! is_installed brew; then
-  echo "Installing Homebrew..."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-fi
-
-echo "Updating Homebrew..."
-brew update
-
-# 2. 准备包列表
-PACKAGES_TO_INSTALL="{{ .packages.common | join " " }} {{ .packages.darwin | join " " }}"
-
-{{- if eq .chezmoi.arch "arm64" }}
-# 添加 ARM64 专用包
-PACKAGES_TO_INSTALL="$PACKAGES_TO_INSTALL {{ .packages.darwin_arm64 | join " " }}"
-{{- end }}
-
-# 处理包名差异: fd-find 在 brew 中是 fd
-PACKAGES_TO_INSTALL=$(echo "$PACKAGES_TO_INSTALL" | sed 's/fd-find/fd/g')
-
-PACKAGES_TO_DARWIN_TAP="{{ .packages.darwin_taps | join " " }}"
-
-echo "Tapping additional Homebrew repositories if needed..."
-for tap in $PACKAGES_TO_DARWIN_TAP; do
-  if ! brew tap | grep -q "^$tap\$"; then
-    echo "Tapping $tap..."
-    brew tap "$tap"
-  else
-    echo "Tap $tap already exists."
-  fi
-done
-
-echo "Installing packages with Homebrew: $PACKAGES_TO_INSTALL"
-# 使用 for 循环来避免单个包失败导致整个命令中断，并提供更好的日志
-for pkg in $PACKAGES_TO_INSTALL; do
-  if brew list --versions "$pkg" >/dev/null; then
-    echo "$pkg is already installed."
-  else
-    echo "Installing $pkg..."
-    brew install "$pkg"
-  fi
-done
-
-# 3. 处理特殊安装
-echo "Handling special Homebrew installations..."
-
-# universal-ctags with --HEAD
-if ! brew list --versions universal-ctags >/dev/null; then
-  echo "Installing universal-ctags from HEAD..."
-  brew install --HEAD universal-ctags/universal-ctags/universal-ctags
-else
-  echo "universal-ctags is already installed."
-fi
-
-# fzf 安装后脚本
-if [ -f "$(brew --prefix)/opt/fzf/install" ]; then
-  echo "Running fzf post-install script..."
-  if ! is_installed fzf; then
-    echo "fzf is not installed, running install script..."
-    {{- if eq .chezmoi.os "darwin" -}}
-      PATH=$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH "$(brew --prefix)/opt/fzf/install" --all
-    {{- else -}}
-      "$(brew --prefix)/opt/fzf/install" --all
-    {{- end }}
-  else
-    echo "fzf is already installed, skipping install script."
+  if [ ! -x /opt/homebrew/bin/brew ] && [ ! -x /usr/local/bin/brew ]; then
+    echo "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   fi
 fi
 
+# Homebrew 安装后，当前 shell 尚未包含其路径。
+if [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x /usr/local/bin/brew ]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
 
+echo "Installing macOS packages and applications from ~/.Brewfile..."
+brew bundle --no-upgrade --file="$HOME/.Brewfile"
 {{- else if eq .chezmoi.os "linux" -}}
 {{- /* --- Linux --- */}}
 

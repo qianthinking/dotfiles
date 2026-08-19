@@ -1,0 +1,40 @@
+brew "curl"
+brew "zsh"
+brew "git"
+brew "tmux"
+brew "jq"
+brew "tree"
+brew "fzf"
+brew "ripgrep"
+brew "bat"
+brew "fd"
+brew "eza"
+brew "git-delta"
+brew "dust"
+brew "duf"
+brew "glances"
+brew "ccache"
+brew "shellcheck"
+brew "gh"
+brew "httpie"
+brew "chroma"
+brew "imagemagick"
+brew "btop"
+brew "coreutils"
+brew "findutils"
+brew "grep"
+brew "laishulu/homebrew/macism", trusted: true
+brew "git-split-diffs"
+brew "argc"
+brew "fastfetch"
+brew "procs"
+brew "atuin"
+brew "mise"
+brew "aicommit2"
+brew "universal-ctags/universal-ctags/universal-ctags", args: ["HEAD"], trusted: true
+{{- if eq .chezmoi.arch "arm64" }}
+brew "macmon"
+{{- end }}
+
+cask "google-chrome", args: { adopt: true }
+cask "iterm2", args: { adopt: true }
