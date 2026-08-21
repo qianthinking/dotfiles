@@ -161,3 +161,9 @@ fi
 unset ZSH_AFTER_DIR
 
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+autoload -Uz add-zsh-hook
+_path_home_bin_first() {
+  path=("$HOME/bin" ${path:#"$HOME/bin"})
+}
+add-zsh-hook precmd _path_home_bin_first
